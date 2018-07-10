@@ -1,2 +1,3 @@
-# qml-webchannel-websockets
-QML examples for WebChannel and WebSockets
+# QML WebChannel and WebSockets
+
+QML examples for WebChannel and WebSockets.
