@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <link rel="stylesheet" href="qrc:/bootstrap.min.css">
+        <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
+        <script type="text/javascript">
+
+            // here will be our QtObject from QML side
+            var backend;
+
+            window.onload = function()
+            {
+                var socket = new WebSocket("ws://127.0.0.1:55222");
+
+                socket.onopen = function()
+                {
+                    new QWebChannel(socket, function(channel) {
+                        // all published objects are available in channel.objects under
+                        // the identifier set in their attached WebChannel.id property
+                        backend = channel.objects.backend;
+
+                        // connect to a signal
+                        backend.someSignal.connect(function(someText) {
+                            alert("Got signal: " + someText);
+                            document.getElementById("lbl").innerHTML = someText;
+                        });
+                    });
+                };
+
+                socket.onerror = function(evt) {
+                    alert("on error");
+                }
+
+                socket.onmessage = function (evt)
+                {
+                    var received_msg = evt.data;
+                    alert("Message is received: " + received_msg);
+                };
+
+                socket.onclose = function(evt)
+                {
+                    // websocket is closed.
+                    alert("Connection is closed: " + evt.code + " - " + evt.reason);
+                };
+            }
+
+            // just to demonstrate you async interaction
+            var result = "ololo";
+            function changeLabel()
+            {
+                var textInputValue = document.getElementById("input").value.trim();
+                if (textInputValue.length === 0)
+                {
+                    alert("You haven't entered anything!");
+                    return;
+                }
+
+                // invoke a method, and receive the return value asynchronously
+                backend.changeText(textInputValue, function(callback) {
+                    //processThisShit(callback);
+                    result = callback;
+                    // since it's async, this alert will appear later and show the actual result
+                    alert(result);
+                    // reset variable back to default value
+                    result = "ololo";
+                });
+                // this alert will appear first and show default "ololo"
+                alert(result);
+            }
+
+            // you can also read/write properties of QtObject from QML side
+            function getPropertyValue()
+            {
+                var originalValue = backend.someProperty;
+
+                alert(backend.someProperty);
+                backend.someProperty = "some another value";
+                alert(backend.someProperty);
+
+                backend.someProperty = originalValue;
+            }
+
+        </script>
+
+        <style>
+            div.centered {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translateX(-50%) translateY(-50%);
+            }
+            #lbl {
+                color: blue;
+                cursor: pointer;
+            }
+        </style>
+
+    </head>
+    <body>
+
+        <div class="container centered">
+            <div class="input-group mb-3">
+                <input id="input" type="text" class="form-control"/>
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-lg btn-primary" onclick="changeLabel();">
+                        send
+                    </button>
+                </div>
+            </div>
+            <div style="text-align:center;">
+                A text label (click on it):
+                    <span id="lbl" onclick="getPropertyValue();">some value</span>
+            </div>
+        </div>
+
+    </body>
+</html>

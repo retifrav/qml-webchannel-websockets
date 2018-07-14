@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.4
 import QtWebChannel 1.0
 import QtWebSockets 1.1
 import QtWebView 1.1
+import io.decovar.WebSocketTransport 1.0
 
 Window {
     visible: true
@@ -36,16 +37,21 @@ Window {
             }
         }
 
+        WebSocketTransport{
+            id: transport
+        }
+
         WebSocketServer {
             id: server
             listen: true
             port: 55222
             onClientConnected: {
-                console.log(webSocket.status);
-//                webSocket.onTextMessageReceived.connect(function(message) {
-//                    console.log(qsTr("Server received message: %1").arg(message));
-//                    //webSocket.sendTextMessage(qsTr("Hello Client!"));
-//                });
+                //console.log(webSocket.status);
+                if(webSocket.status === WebSocket.Open){
+                    channel.connectTo(transport)
+                    webSocket.onTextMessageReceived.connect(transport.textMessageReceive)
+                    transport.onMessageChanged.connect(webSocket.sendTextMessage)
+                }
             }
             onErrorStringChanged: {
                 console.log(qsTr("Server error: %1").arg(errorString));
@@ -54,29 +60,6 @@ Window {
 //                console.log(server.url);
 //            }
         }
-
-//        WebSocket {
-//            id: socket
-//            url: server.url
-//            active: true
-
-//            property var onmessage
-//            property var send: function(arg) {
-//                sendTextMessage(arg);
-//            }
-//            onTextMessageReceived: console.log(qsTr("Client received message: %1").arg(message))
-
-//            onStatusChanged: {
-//                if (socket.status == WebSocket.Error) {
-//                    console.log(qsTr("Client error: %1").arg(socket.errorString));
-//                } else if (socket.status == WebSocket.Closed) {
-//                    console.log(qsTr("Client socket closed."));
-//                }
-//            }
-//            Component.onCompleted: {
-//                console.log(server.url);
-//            }
-//        }
 
         Rectangle {
             Layout.fillWidth: true
@@ -103,18 +86,16 @@ Window {
             border.width: 2
             border.color: "blue"
 
-//            WebView {
-//                id: webView
-//                anchors.fill: parent
-//                anchors.margins: 5
-//                url: "qrc:/index.html"
-//                onLoadingChanged: {
-//                    if (loadRequest.errorString)
-//                        console.error(loadRequest.errorString);
-//                }
-//                //webChannel: channel // invalid property name "webChannel"
-//                //experimental.webChannel.registeredObjects: [someObject] // invalid property name "experimental"
-//            }
+            WebView {
+                id: webView
+                anchors.fill: parent
+                anchors.margins: 5
+                url: "qrc:/index.html"
+                onLoadingChanged: {
+                    if (loadRequest.errorString)
+                        { console.error(loadRequest.errorString); }
+                }
+            }
 
             WebChannel {
                 id: channel

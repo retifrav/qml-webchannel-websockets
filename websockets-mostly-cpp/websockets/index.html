@@ -3,8 +3,8 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-        <link rel="stylesheet" href="bootstrap.min.css">
-        <script type="text/javascript" src="qwebchannel.js"></script>
+        <link rel="stylesheet" href="qrc:/bootstrap.min.css">
+        <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
 
         <script type="text/javascript">
 
@@ -13,14 +13,10 @@
 
             window.onload = function()
             {
-                var socket = new WebSocket("ws://localhost:55222");
+                var socket = new WebSocket("ws://127.0.0.1:55222");
 
                 socket.onopen = function()
                 {
-                    // Web Socket is connected, send data using send()
-                    //socket.send("Message to send");
-                    //alert("Message is sent...");
-                    //alert("ololo");
                     new QWebChannel(socket, function(channel) {
                         // all published objects are available in channel.objects under
                         // the identifier set in their attached WebChannel.id property
