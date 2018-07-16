@@ -29,7 +29,7 @@ Window {
                 color: "green"
                 text: "Some text"
                 onTextChanged: {
-                    // this signal will trigger a function at WebEngineView side (if connected)
+                    // this signal will trigger a function at WebView side (if connected)
                     someObject.someSignal(text)
                 }
                 Component.onCompleted: {

@@ -37,7 +37,7 @@ Window {
             }
         }
 
-        WebSocketTransport{
+        WebSocketTransport {
             id: transport
         }
 
@@ -47,7 +47,7 @@ Window {
             port: 55222
             onClientConnected: {
                 //console.log(webSocket.status);
-                if(webSocket.status === WebSocket.Open){
+                if(webSocket.status === WebSocket.Open) {
                     channel.connectTo(transport)
                     webSocket.onTextMessageReceived.connect(transport.textMessageReceive)
                     transport.onMessageChanged.connect(webSocket.sendTextMessage)
@@ -74,7 +74,7 @@ Window {
                 color: "green"
                 text: "Some text"
                 onTextChanged: {
-                    // this signal will trigger a function at WebEngineView side (if connected)
+                    // this signal will trigger a function at WebView side (if connected)
                     someObject.someSignal(text)
                 }
             }

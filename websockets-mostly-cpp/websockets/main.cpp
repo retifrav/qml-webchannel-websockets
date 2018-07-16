@@ -18,7 +18,10 @@ int main(int argc, char *argv[])
     // don't forget about this
     QtWebView::initialize();
 
-    QWebSocketServer server(QStringLiteral("WebSockets example"), QWebSocketServer::NonSecureMode);
+    QWebSocketServer server(
+                QStringLiteral("WebSockets example"),
+                QWebSocketServer::NonSecureMode
+                );
     if (!server.listen(QHostAddress::LocalHost, 55222))
     {
         qFatal("Failed to open web socket server.");
