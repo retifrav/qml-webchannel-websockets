@@ -90,7 +90,7 @@ Window {
                 id: webView
                 anchors.fill: parent
                 anchors.margins: 5
-                url: "qrc:/index.html"
+                url: "qrc:/index.html" //"file:" + applicationDirPath + "/index.html" //"http://192.168.100.8:8080/index.html"
                 onLoadingChanged: {
                     if (loadRequest.errorString)
                         { console.error(loadRequest.errorString); }
